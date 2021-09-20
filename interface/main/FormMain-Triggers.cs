@@ -180,7 +180,7 @@ namespace AutoScreenCapture
 
                 case TriggerActionType.RunEditor:
                     Editor editor = _formEditor.EditorCollection.GetByName(trigger.Value);
-                    RunEditor(editor, TriggerActionType.RunEditor);
+                    RunEditor(editor, TriggerActionType.RunEditor, trigger.ConditionType);
                     break;
 
                 case TriggerActionType.ShowInterface:

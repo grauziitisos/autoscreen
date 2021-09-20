@@ -331,6 +331,7 @@ namespace AutoScreenCapture
             listBoxCondition.Items.Add(new TriggerCondition(TriggerConditionType.BeforeScreenshotTaken, "Before Screenshot Taken").Description);
             listBoxCondition.Items.Add(new TriggerCondition(TriggerConditionType.BeforeScreenshotReferencesSaved, "Before Screenshot References Saved").Description);
             listBoxCondition.Items.Add(new TriggerCondition(TriggerConditionType.AfterScreenshotReferencesSaved, "After Screenshot References Saved").Description);
+            listBoxCondition.Items.Add(new TriggerCondition(TriggerConditionType.AfterSingleScreenshotTaken, "After Single Screenshot Taken").Description);
 
             listBoxCondition.SelectedIndex = 0;
         }
@@ -650,6 +651,11 @@ namespace AutoScreenCapture
                 // After Screenshot References Saved
                 case 14:
                     textBoxConditionHelp.Text = "When screenshot references have been saved to disk during a recurring five minute maintenance timer.";
+                    break;
+
+                // After Single Screenshot Taken
+                case 15:
+                    textBoxConditionHelp.Text = "When a single screen/area screenshot has been taken after it has been saved to disk.";
                     break;
             }
         }

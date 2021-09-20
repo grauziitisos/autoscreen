@@ -201,7 +201,7 @@ namespace AutoScreenCapture
         /// </summary>
         /// <param name="editor">The image editor to execute.</param>
         /// <param name="triggerActionType">The trigger's action type.</param>
-        private void RunEditor(Editor editor, TriggerActionType triggerActionType)
+        private void RunEditor(Editor editor, TriggerActionType triggerActionType, TriggerConditionType triggerConditionType= TriggerConditionType.AfterScreenshotTaken)
         {
             if (editor != null && triggerActionType == TriggerActionType.RunEditor)
             {
@@ -210,7 +210,9 @@ namespace AutoScreenCapture
                 {
                     DateTime dt = _screenCapture.DateTimeScreenshotsTaken;
 
-                    foreach (Screenshot screenshot in _screenshotCollection.GetScreenshots(dt.ToString(_macroParser.DateFormat), dt.ToString(_macroParser.TimeFormat)))
+                    System.Collections.Generic.List<Screenshot> screenshots = _screenshotCollection.GetScreenshots(dt.ToString(_macroParser.DateFormat), dt.ToString(_macroParser.TimeFormat));
+                    if (triggerConditionType == TriggerConditionType.AfterSingleScreenshotTaken ? screenshots != null ? screenshots.Count > 0 :false:false) screenshots = new System.Collections.Generic.List<Screenshot>() { screenshots[screenshots.Count - 1] };
+                    foreach (Screenshot screenshot in screenshots)
                     {
                         if (screenshot != null && screenshot.Slide != null && !string.IsNullOrEmpty(screenshot.Path))
                         {
