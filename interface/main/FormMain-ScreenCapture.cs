@@ -336,9 +336,10 @@ namespace AutoScreenCapture
                 Encrypted = screen.Encrypt
             };
 
-            if (_screenCapture.SaveScreenshot(_security, screen.JpegQuality, screenshot, _screenshotCollection))
+            bool screenSaved = _screenCapture.SaveScreenshot(_security, screen.JpegQuality, screenshot, _screenshotCollection);
+            if (screenSaved || _screenshotCollection.OptimizeScreenCapture)
             {
-                ScreenshotTakenWithSuccess();
+                ScreenshotTakenWithSuccess(screenSaved);
 
                 return true;
             }
@@ -368,9 +369,10 @@ namespace AutoScreenCapture
                 Encrypted = region.Encrypt
             };
 
-            if (_screenCapture.SaveScreenshot(_security, region.JpegQuality, screenshot, _screenshotCollection))
+            bool screenSaved = _screenCapture.SaveScreenshot(_security, region.JpegQuality, screenshot, _screenshotCollection);
+            if (screenSaved || _screenshotCollection.OptimizeScreenCapture)
             {
-                ScreenshotTakenWithSuccess();
+                ScreenshotTakenWithSuccess(screenSaved);
 
                 return true;
             }
@@ -382,12 +384,15 @@ namespace AutoScreenCapture
             }
         }
 
-        private void ScreenshotTakenWithSuccess()
+        private void ScreenshotTakenWithSuccess(bool RunTriggers = true)
         {
             _log.WriteDebugMessage("Running triggers of condition type ScreenshotTaken");
 
-            RunTriggersOfConditionType(TriggerConditionType.AfterSingleScreenshotTaken);
-            RunTriggersOfConditionType(TriggerConditionType.AfterScreenshotTaken);
+            if (RunTriggers)
+            {
+                RunTriggersOfConditionType(TriggerConditionType.AfterSingleScreenshotTaken);
+                RunTriggersOfConditionType(TriggerConditionType.AfterScreenshotTaken);
+            }
         }
 
         private void ScreenshotTakenWithFailure()
