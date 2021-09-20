@@ -336,7 +336,7 @@ namespace AutoScreenCapture
             return encoders.FirstOrDefault(t => t.MimeType == mimeType);
         }
 
-        private void AddScreenshotAndSaveToFile(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
+        private bool AddScreenshotAndSaveToFile(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
         {
             string dirName = _fileSystem.GetDirectoryName(screenshot.Path);
 
@@ -344,7 +344,7 @@ namespace AutoScreenCapture
             {
                 _log.WriteDebugMessage("Directory name for screenshot with path \"" + screenshot.Path + "\" could not be found");
 
-                return;
+                return false;
             }
 
             try
@@ -359,6 +359,7 @@ namespace AutoScreenCapture
                 if (screenshotCollection.Add(screenshot))
                 {
                     SaveToFile(screenshot, security, jpegQuality);
+                    return true;
                 }
                 else
                 {
@@ -370,6 +371,7 @@ namespace AutoScreenCapture
                     }
 
                     _log.WriteDebugMessage("Could not save screenshot with path \"" + screenshot.Path + "\" because its " + hash + " may have matched with a previous hash that has already been used for an earlier screenshot");
+                    return false;
                 }
             }
             catch
@@ -377,6 +379,7 @@ namespace AutoScreenCapture
                 // We don't want to stop the screen capture session at this point because there may be other components that
                 // can write to their given paths. If this is a misconfigured path for a particular component then just log an error.
                 _log.WriteErrorMessage($"Cannot write to \"{screenshot.Path}\" because the user may not have the appropriate permissions to access the path");
+                return false;
             }
         }
 
@@ -771,7 +774,7 @@ namespace AutoScreenCapture
 
                             if (freeDiskSpacePercentage > lowDiskSpacePercentageThreshold)
                             {
-                                AddScreenshotAndSaveToFile(security, jpegQuality, screenshot, screenshotCollection);
+                                return AddScreenshotAndSaveToFile(security, jpegQuality, screenshot, screenshotCollection);
                             }
                             else
                             {
@@ -801,7 +804,7 @@ namespace AutoScreenCapture
                     else
                     {
                         // This is a UNC network share path (such as "\\SERVER\screenshots\").
-                        AddScreenshotAndSaveToFile(security, jpegQuality, screenshot, screenshotCollection);
+                        return AddScreenshotAndSaveToFile(security, jpegQuality, screenshot, screenshotCollection);
                     }
                 }
 
