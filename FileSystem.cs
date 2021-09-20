@@ -116,6 +116,11 @@ namespace AutoScreenCapture
         public readonly string DefaultEditorsFile = AppDomain.CurrentDomain.BaseDirectory + "!autoscreen\\editors.xml";
 
         /// <summary>
+        /// The file containing the references to ExternalPrograms.
+        /// </summary>
+        public readonly string DefaultExternalProgramsFile = AppDomain.CurrentDomain.BaseDirectory + "!autoscreen\\externalprograms.xml";
+
+        /// <summary>
         /// The file containing the references to Regions.
         /// </summary>
         public readonly string DefaultRegionsFile = AppDomain.CurrentDomain.BaseDirectory + "!autoscreen\\regions.xml";
@@ -190,6 +195,11 @@ namespace AutoScreenCapture
         /// </summary>
         public string EditorsFile;
 
+        /// <summary>
+        /// ExternalPrograms file.
+        /// </summary>
+        public string ExternalProgramsFile;
+        
         /// <summary>
         /// Regions file.
         /// </summary>

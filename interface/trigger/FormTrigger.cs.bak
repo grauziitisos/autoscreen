@@ -47,7 +47,7 @@ namespace AutoScreenCapture
         public EditorCollection EditorCollection { get; set; }
         
         /// <summary>
-        /// A collection of external programs.
+        /// A collection of editors.
         /// </summary>
         public ExternalProgramCollection ExternalProgramCollection { get; set; }
 

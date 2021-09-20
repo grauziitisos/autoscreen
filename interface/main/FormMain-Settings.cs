@@ -53,6 +53,7 @@ namespace AutoScreenCapture
                 _log.WriteMessage("ScreensFile=" + _fileSystem.ScreensFile);
                 _log.WriteMessage("RegionsFile=" + _fileSystem.RegionsFile);
                 _log.WriteMessage("EditorsFile=" + _fileSystem.EditorsFile);
+                _log.WriteMessage("ExternalProgramsFile=" + _fileSystem.ExternalProgramsFile);
                 _log.WriteMessage("TagsFile = " + _fileSystem.TagsFile);
 
                 _log.WriteMessage("It looks like I successfully parsed your \"" + _fileSystem.ConfigFile + "\" file.");
@@ -70,6 +71,7 @@ namespace AutoScreenCapture
                 _formRegion = new FormRegion(_screenCapture, _macroParser, _fileSystem, _log);
                 _formScreen = new FormScreen(_screenCapture, _macroParser, _fileSystem, _log);
                 _formEditor = new FormEditor(_config, _fileSystem);
+                _formExternalProgram = new FormExternalProgram(_config, _fileSystem);
                 _formEmailSettings = new FormEmailSettings(_config, _fileSystem);
                 _formFileTransferSettings = new FormFileTransferSettings(_config, _fileSystem);
                 _formRegionSelectOptions = new FormRegionSelectOptions(_config, _fileSystem, _imageFormatCollection);
@@ -88,6 +90,15 @@ namespace AutoScreenCapture
                 }
 
                 _log.WriteDebugMessage("Number of editors loaded = " + _formEditor.EditorCollection.Count);
+
+                _log.WriteDebugMessage("Initializing external program collection");
+
+                if (!_formExternalProgram.ExternalProgramCollection.LoadXmlFileAndAddExternalPrograms(_config, _fileSystem, _log))
+                {
+                    _screenCapture.ApplicationError = true;
+                }
+
+                _log.WriteDebugMessage("Number of external programs loaded = " + _formExternalProgram.ExternalProgramCollection.Count);
 
                 _log.WriteDebugMessage("Initializing trigger collection");
 
@@ -141,6 +152,9 @@ namespace AutoScreenCapture
 
                 _log.WriteDebugMessage("Building editors module");
                 BuildEditorsModule();
+
+                _log.WriteDebugMessage("Building external programs module");
+                BuildExternalProgramsModule();
 
                 _log.WriteDebugMessage("Building triggers module");
                 BuildTriggersModule();

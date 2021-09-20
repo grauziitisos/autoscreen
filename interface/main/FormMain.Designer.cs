@@ -102,6 +102,7 @@ namespace AutoScreenCapture
             this.tabPageScreens = new System.Windows.Forms.TabPage();
             this.tabPageRegions = new System.Windows.Forms.TabPage();
             this.tabPageEditors = new System.Windows.Forms.TabPage();
+            this.tabPageExternalPrograms = new System.Windows.Forms.TabPage();
             this.tabPageSchedules = new System.Windows.Forms.TabPage();
             this.tabPageMacroTags = new System.Windows.Forms.TabPage();
             this.tabPageTriggers = new System.Windows.Forms.TabPage();
@@ -713,6 +714,7 @@ namespace AutoScreenCapture
             this.tabControlModules.Controls.Add(this.tabPageScreens);
             this.tabControlModules.Controls.Add(this.tabPageRegions);
             this.tabControlModules.Controls.Add(this.tabPageEditors);
+            this.tabControlModules.Controls.Add(this.tabPageExternalPrograms);
             this.tabControlModules.Controls.Add(this.tabPageSchedules);
             this.tabControlModules.Controls.Add(this.tabPageMacroTags);
             this.tabControlModules.Controls.Add(this.tabPageTriggers);
@@ -765,7 +767,17 @@ namespace AutoScreenCapture
             this.tabPageEditors.Size = new System.Drawing.Size(241, 363);
             this.tabPageEditors.TabIndex = 2;
             this.tabPageEditors.Text = "Editors";
-            this.tabPageEditors.UseVisualStyleBackColor = true;
+            this.tabPageEditors.UseVisualStyleBackColor = true;            // 
+            // tabPageExternalPrograms
+            // 
+            this.tabPageExternalPrograms.AutoScroll = true;
+            this.tabPageExternalPrograms.Location = new System.Drawing.Point(4, 40);
+            this.tabPageExternalPrograms.Name = "tabPageExternalPrograms";
+            this.tabPageExternalPrograms.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageExternalPrograms.Size = new System.Drawing.Size(241, 363);
+            this.tabPageExternalPrograms.TabIndex = 2;
+            this.tabPageExternalPrograms.Text = "ExternalPrograms";
+            this.tabPageExternalPrograms.UseVisualStyleBackColor = true;
             // 
             // tabPageSchedules
             // 
@@ -947,6 +959,7 @@ namespace AutoScreenCapture
         private System.Windows.Forms.ToolStripSeparator toolStripSeparatorAbout;
         private System.Windows.Forms.Timer timerScreenCapture;
         private System.Windows.Forms.TabPage tabPageEditors;
+        private System.Windows.Forms.TabPage tabPageExternalPrograms;
         private System.Windows.Forms.TabPage tabPageTriggers;
         private System.Windows.Forms.TabPage tabPageRegions;
         private System.Windows.Forms.TabPage tabPageScreens;

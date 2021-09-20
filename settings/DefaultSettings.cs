@@ -52,6 +52,7 @@ namespace AutoScreenCapture
         internal readonly string ScreenshotLabel = string.Empty;
         internal readonly bool ApplyScreenshotLabel = false;
         internal readonly string DefaultEditor = string.Empty;
+        internal readonly string DefaultExternalProgram = string.Empty;
         internal readonly bool FirstRun = true;
         internal readonly int StartScreenCaptureCount = 0;
         internal readonly bool ActiveWindowTitleCaptureCheck = false;

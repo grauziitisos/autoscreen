@@ -66,6 +66,7 @@ namespace AutoScreenCapture
         private FormRegion _formRegion;
         private FormScreen _formScreen;
         private FormEditor _formEditor;
+        private FormExternalProgram _formExternalProgram;
         private FormTrigger _formTrigger;
         private FormSchedule _formSchedule;
 

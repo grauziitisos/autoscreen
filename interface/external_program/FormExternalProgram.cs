@@ -1,9 +1,9 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="FormEditor.cs" company="Gavin Kendall">
+// <copyright file="FormExternalProgram.cs" company="Gavin Kendall">
 //     Copyright (c) 2008-2021 Gavin Kendall
 // </copyright>
 // <author>Gavin Kendall</author>
-// <summary>A form for adding a new editor or changing an existing editor.</summary>
+// <summary>A form for adding a new external program or changing an existing external program.</summary>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,9 +26,9 @@ using System.Windows.Forms;
 namespace AutoScreenCapture
 {
     /// <summary>
-    /// The form for managing image editors.
+    /// The form for managing external programs.
     /// </summary>
-    public partial class FormEditor : Form
+    public partial class FormExternalProgram : Form
     {
         private Config _config;
         private FileSystem _fileSystem;
@@ -36,28 +36,23 @@ namespace AutoScreenCapture
         private ToolTip _toolTip = new ToolTip();
 
         /// <summary>
-        /// A collection of editors.
-        /// </summary>
-        public EditorCollection EditorCollection { get; } = new EditorCollection();
-        
-        /// <summary>
         /// A collection of external programs.
         /// </summary>
         public ExternalProgramCollection ExternalProgramCollection { get; } = new ExternalProgramCollection();
 
         /// <summary>
-        /// The editor object to handle.
+        /// The external program object to handle.
         /// </summary>
-        public Editor EditorObject { get; set; }
+        public ExternalProgram ExternalProgramObject { get; set; }
 
         private readonly string defaultArguments = "%filepath%";
 
-        private ComponentResourceManager resources = new ComponentResourceManager(typeof(FormEditor));
+        private ComponentResourceManager resources = new ComponentResourceManager(typeof(FormExternalProgram));
 
         /// <summary>
         /// Empty constructor.
         /// </summary>
-        public FormEditor(Config config, FileSystem fileSystem)
+        public FormExternalProgram(Config config, FileSystem fileSystem)
         {
             InitializeComponent();
 
@@ -65,50 +60,50 @@ namespace AutoScreenCapture
             _fileSystem = fileSystem;
         }
 
-        private void FormEditor_Load(object sender, EventArgs e)
+        private void FormExternalProgram_Load(object sender, EventArgs e)
         {
             textBoxName.Focus();
 
             HelpMessage("This is where to configure an application or script for editing screenshots. The optional %filepath% argument is the filepath of the screenshot");
 
-            _toolTip.SetToolTip(checkBoxMakeDefaultEditor, "When checked it will make this editor the default editor");
-            _toolTip.SetToolTip(buttonChooseEditor, "Browse for an application or script");
+            _toolTip.SetToolTip(checkBoxMakeDefaultExternalProgram, "When checked it will make this external program the default external program");
+            _toolTip.SetToolTip(buttonChooseExternalProgram, "Browse for an application or script");
 
-            checkBoxMakeDefaultEditor.Checked = false;
+            checkBoxMakeDefaultExternalProgram.Checked = false;
 
-            if (EditorObject != null)
+            if (ExternalProgramObject != null)
             {
-                Text = "Change Editor";
+                Text = "Change ExternalProgram";
 
-                if (!string.IsNullOrEmpty(EditorObject.Application) &&
-                    _fileSystem.FileExists(EditorObject.Application))
+                if (!string.IsNullOrEmpty(ExternalProgramObject.Application) &&
+                    _fileSystem.FileExists(ExternalProgramObject.Application))
                 {
-                    Icon = Icon.ExtractAssociatedIcon(EditorObject.Application);
+                    Icon = Icon.ExtractAssociatedIcon(ExternalProgramObject.Application);
                 }
                 else
                 {
                     Icon = (Icon)resources.GetObject("$this.Icon");
                 }
 
-                textBoxName.Text = EditorObject.Name;
-                textBoxApplication.Text = EditorObject.Application;
-                textBoxArguments.Text = EditorObject.Arguments;
+                textBoxName.Text = ExternalProgramObject.Name;
+                textBoxApplication.Text = ExternalProgramObject.Application;
+                textBoxArguments.Text = ExternalProgramObject.Arguments;
 
-                string defaultEditor = _config.Settings.User.GetByKey("DefaultEditor", _config.Settings.DefaultSettings.DefaultEditor).Value.ToString();
+                string defaultExternalProgram = _config.Settings.User.GetByKey("DefaultExternalProgram", _config.Settings.DefaultSettings.DefaultExternalProgram).Value.ToString();
 
-                if (EditorObject.Name.Equals(defaultEditor))
+                if (ExternalProgramObject.Name.Equals(defaultExternalProgram))
                 {
-                    checkBoxMakeDefaultEditor.Checked = true;
+                    checkBoxMakeDefaultExternalProgram.Checked = true;
                 }
 
-                textBoxNotes.Text = EditorObject.Notes;
+                textBoxNotes.Text = ExternalProgramObject.Notes;
             }
             else
             {
-                Text = "Add Editor";
+                Text = "Add ExternalProgram";
                 Icon = (Icon)resources.GetObject("$this.Icon");
 
-                textBoxName.Text = "Editor " + (EditorCollection.Count + 1);
+                textBoxName.Text = "ExternalProgram " + (ExternalProgramCollection.Count + 1);
                 textBoxApplication.Text = string.Empty;
                 textBoxArguments.Text = defaultArguments;
                 textBoxNotes.Text = string.Empty;
@@ -127,23 +122,23 @@ namespace AutoScreenCapture
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (checkBoxMakeDefaultEditor.Checked && !string.IsNullOrEmpty(textBoxName.Text))
+            if (checkBoxMakeDefaultExternalProgram.Checked && !string.IsNullOrEmpty(textBoxName.Text))
             {
-                _config.Settings.User.GetByKey("DefaultEditor", _config.Settings.DefaultSettings.DefaultEditor).Value = textBoxName.Text;
+                _config.Settings.User.GetByKey("DefaultExternalProgram", _config.Settings.DefaultSettings.DefaultExternalProgram).Value = textBoxName.Text;
                 _config.Settings.User.Save(_config.Settings, _fileSystem);
             }
 
-            if (EditorObject != null)
+            if (ExternalProgramObject != null)
             {
-                ChangeEditor();
+                ChangeExternalProgram();
             }
             else
             {
-                AddEditor();
+                AddExternalProgram();
             }
         }
 
-        private void AddEditor()
+        private void AddExternalProgram()
         {
             if (InputValid())
             {
@@ -151,9 +146,9 @@ namespace AutoScreenCapture
 
                 if (ApplicationExists())
                 {
-                    if (EditorCollection.GetByName(textBoxName.Text) == null)
+                    if (ExternalProgramCollection.GetByName(textBoxName.Text) == null)
                     {
-                        Editor editor = new Editor()
+                        ExternalProgram program = new ExternalProgram()
                         {
                             Name = textBoxName.Text,
                             Application = textBoxApplication.Text,
@@ -161,13 +156,13 @@ namespace AutoScreenCapture
                             Notes = textBoxNotes.Text
                         };
 
-                        EditorCollection.Add(editor);
+                        ExternalProgramCollection.Add(program);
 
                         Okay();
                     }
                     else
                     {
-                        MessageBox.Show("An editor with this name already exists.", "Duplicate Name Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show("An external program with this name already exists.", "Duplicate Name Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
                 else
@@ -181,7 +176,7 @@ namespace AutoScreenCapture
             }
         }
 
-        private void ChangeEditor()
+        private void ChangeExternalProgram()
         {
             if (InputValid())
             {
@@ -191,16 +186,16 @@ namespace AutoScreenCapture
 
                     if (ApplicationExists())
                     {
-                        if (EditorCollection.GetByName(textBoxName.Text) != null && NameChanged())
+                        if (ExternalProgramCollection.GetByName(textBoxName.Text) != null && NameChanged())
                         {
-                            MessageBox.Show("An editor with this name already exists.", "Duplicate Name Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            MessageBox.Show("An external program with this name already exists.", "Duplicate Name Conflict", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         }
                         else
                         {
-                            EditorCollection.Get(EditorObject).Application = textBoxApplication.Text;
-                            EditorCollection.Get(EditorObject).Arguments = textBoxArguments.Text;
-                            EditorCollection.Get(EditorObject).Name = textBoxName.Text;
-                            EditorCollection.Get(EditorObject).Notes = textBoxNotes.Text;
+                            ExternalProgramCollection.Get(ExternalProgramObject).Application = textBoxApplication.Text;
+                            ExternalProgramCollection.Get(ExternalProgramObject).Arguments = textBoxArguments.Text;
+                            ExternalProgramCollection.Get(ExternalProgramObject).Name = textBoxName.Text;
+                            ExternalProgramCollection.Get(ExternalProgramObject).Notes = textBoxNotes.Text;
 
                             Okay();
                         }
@@ -242,10 +237,10 @@ namespace AutoScreenCapture
 
         private bool InputChanged()
         {
-            if (EditorObject != null &&
-                (!EditorObject.Application.Equals(textBoxApplication.Text) ||
-                    !EditorObject.Arguments.Equals(textBoxArguments.Text)) ||
-                    !EditorObject.Notes.Equals(textBoxNotes.Text))
+            if (ExternalProgramObject != null &&
+                (!ExternalProgramObject.Application.Equals(textBoxApplication.Text) ||
+                    !ExternalProgramObject.Arguments.Equals(textBoxArguments.Text)) ||
+                    !ExternalProgramObject.Notes.Equals(textBoxNotes.Text))
             {
                 return true;
             }
@@ -255,8 +250,8 @@ namespace AutoScreenCapture
 
         private bool NameChanged()
         {
-            if (EditorObject != null &&
-                !EditorObject.Name.Equals(textBoxName.Text))
+            if (ExternalProgramObject != null &&
+                !ExternalProgramObject.Name.Equals(textBoxName.Text))
             {
                 return true;
             }
@@ -281,7 +276,7 @@ namespace AutoScreenCapture
             Close();
         }
 
-        private void buttonChooseEditor_Click(object sender, EventArgs e)
+        private void buttonChooseExternalProgram_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog
             {

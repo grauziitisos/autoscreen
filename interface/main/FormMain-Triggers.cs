@@ -37,6 +37,7 @@ namespace AutoScreenCapture
             _formTrigger.TriggerObject = null;
 
             _formTrigger.EditorCollection = _formEditor.EditorCollection;
+            _formTrigger.ExternalProgramCollection = _formExternalProgram.ExternalProgramCollection;
             _formTrigger.ScreenCollection = _formScreen.ScreenCollection;
             _formTrigger.RegionCollection = _formRegion.RegionCollection;
             _formTrigger.ScheduleCollection = _formSchedule.ScheduleCollection;
@@ -123,6 +124,7 @@ namespace AutoScreenCapture
             _formTrigger.TriggerObject = trigger;
 
             _formTrigger.EditorCollection = _formEditor.EditorCollection;
+            _formTrigger.ExternalProgramCollection = _formExternalProgram.ExternalProgramCollection;
             _formTrigger.ScreenCollection = _formScreen.ScreenCollection;
             _formTrigger.RegionCollection = _formRegion.RegionCollection;
             _formTrigger.ScheduleCollection = _formSchedule.ScheduleCollection;
@@ -181,6 +183,11 @@ namespace AutoScreenCapture
                 case TriggerActionType.RunEditor:
                     Editor editor = _formEditor.EditorCollection.GetByName(trigger.Value);
                     RunEditor(editor, TriggerActionType.RunEditor);
+                    break;
+
+                case TriggerActionType.RunExternalProgram:
+                    ExternalProgram external_program = _formExternalProgram.ExternalProgramCollection.GetByName(trigger.Value);
+                    RunExternalProgram(external_program, TriggerActionType.RunExternalProgram);
                     break;
 
                 case TriggerActionType.ShowInterface:

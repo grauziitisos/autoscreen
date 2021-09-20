@@ -153,6 +153,11 @@ namespace AutoScreenCapture
         /// <summary>
         /// Hide the system tray icon.
         /// </summary>
-        HideSystemTrayIcon = 25
+        HideSystemTrayIcon = 25,
+
+        /// <summary>
+        /// Run external program or batch
+        /// </summary>
+        RunExternalProgram = 26
     }
 }

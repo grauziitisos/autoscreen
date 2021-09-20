@@ -103,7 +103,7 @@ namespace AutoScreenCapture
                 string text = t.GetProperty("Name").GetValue(@object, null).ToString();
 
                 // Editors have application icons so we'd like to display those in the list on the tab page.
-                if (t.Equals(typeof(Editor)))
+                if (t.Equals(typeof(Editor)) ? true : t.Equals(typeof(ExternalProgram)))
                 {
                     string application = t.GetProperty("Application").GetValue(@object, null).ToString();
 
@@ -318,6 +318,11 @@ namespace AutoScreenCapture
         private void BuildEditorsModule()
         {
             BuildModule(_formEditor.EditorCollection, tabPageEditors, addEditor_Click, removeSelectedEditors_Click, changeEditor_Click);
+        }
+
+        private void BuildExternalProgramsModule()
+        {
+            BuildModule(_formExternalProgram.ExternalProgramCollection, tabPageExternalPrograms, addExternalProgram_Click, removeSelectedExternalPrograms_Click, changeExternalProgram_Click);
         }
 
         private void BuildTriggersModule()

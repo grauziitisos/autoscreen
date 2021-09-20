@@ -38,6 +38,7 @@ namespace AutoScreenCapture
         private const string REGEX_SFTP_SETTINGS_FILE = "^SFTPSettingsFile=(?<Path>.+)$";
         private const string REGEX_USER_SETTINGS_FILE = "^UserSettingsFile=(?<Path>.+)$";
         private const string REGEX_EDITORS_FILE = "^EditorsFile=(?<Path>.+)$";
+        private const string REGEX_EXTERNAL_PROGRAMS_FILE = "^ExternalProgramsFile=(?<Path>.+)$";
         private const string REGEX_REGIONS_FILE = "^RegionsFile=(?<Path>.+)$";
         private const string REGEX_SCREENS_FILE = "^ScreensFile=(?<Path>.+)$";
         private const string REGEX_TRIGGERS_FILE = "^TriggersFile=(?<Path>.+)$";
@@ -124,6 +125,8 @@ namespace AutoScreenCapture
                         "SFTPSettingsFile=" + FileSystem.DefaultSftpSettingsFile, "",
                         "# References to image editors.",
                         "EditorsFile=" + FileSystem.DefaultEditorsFile, "",
+                        "# References to external programs.",
+                        "ExternalProgramsFile=" + FileSystem.DefaultExternalProgramsFile, "",
                         "# References to regions.",
                         "RegionsFile=" + FileSystem.DefaultRegionsFile, "",
                         "# References to screens.",
@@ -177,6 +180,9 @@ namespace AutoScreenCapture
                     if (GetPathAndCreateIfNotFound(line, REGEX_EDITORS_FILE, out path))
                         FileSystem.EditorsFile = path;
 
+                    if (GetPathAndCreateIfNotFound(line, REGEX_EXTERNAL_PROGRAMS_FILE, out path))
+                        FileSystem.ExternalProgramsFile = path;
+                    
                     if (GetPathAndCreateIfNotFound(line, REGEX_REGIONS_FILE, out path))
                         FileSystem.RegionsFile = path;
 
@@ -345,6 +351,13 @@ namespace AutoScreenCapture
                 // Loading the editor collection will automatically create the default editors and add them to the collection.
                 EditorCollection editorCollection = new EditorCollection();
                 editorCollection.LoadXmlFileAndAddEditors(this, FileSystem, log);
+            }
+
+            if (string.IsNullOrEmpty(FileSystem.ExternalProgramsFile))
+            {
+                // Loading the external program collection will automatically create the default external programs and add them to the collection.
+                ExternalProgramCollection externalProgramsCollection = new ExternalProgramCollection();
+                externalProgramsCollection.LoadXmlFileAndAddExternalPrograms(this, FileSystem, log);
             }
 
             if (string.IsNullOrEmpty(FileSystem.RegionsFile))
