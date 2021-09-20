@@ -31,15 +31,42 @@ using System.Windows.Forms;
 
 namespace AutoScreenCapture
 {
+    /// <summary>
+    /// Enum that describes the flags being passed from screen saving function result
+    /// </summary>
     public enum ScreenSavingErrorLevels
     {
+        /// <summary>
+        /// No error occured
+        /// </summary>
         None = 0,
+        /// <summary>
+        /// Directory name for screenshot with given path could not be found"
+        /// </summary>
         DirNotFound = 2,
+        /// <summary>
+        /// Could not save screenshot with given path because its hash may have matched with a previous hash that has already been used for an earlier screenshot
+        /// </summary>
         HashDuplicate = 4,
+        /// <summary>
+        /// Cannot write to given path because the user may not have the appropriate permissions to access the path
+        /// </summary>
         UserNotEnoughPermissions = 8,
+        /// <summary>
+        /// Running screen capture session has stopped because application setting StopOnLowDiskError was set to True when the available disk space on any drive was lower than the value of LowDiskPercentageThreshold
+        /// </summary>
         StopOnLowDiskError = 16,
+        /// <summary>
+        /// Unable to save screenshot for given path because the drive is not found or not ready
+        /// </summary>
         DriveNotReady = 32,
+        /// <summary>
+        /// The path is too long. The path is given, but the length exceeds what Windows can handle so the file could not be saved. There is probably an exception error from Windows explaining why
+        /// </summary>
         PathLengthExceeded = 64,
+        /// <summary>
+        /// Another exception caught when trying to save. User should check the log for the logged exceptionmessage details.
+        /// </summary>
         ExceptionCaught = 128
     }
     /// <summary>
