@@ -31,6 +31,17 @@ using System.Windows.Forms;
 
 namespace AutoScreenCapture
 {
+    public enum ScreenSavingErrorLevels
+    {
+        None = 0,
+        DirNotFound = 2,
+        HashDuplicate = 4,
+        UserNotEnoughPermissions = 8,
+        StopOnLowDiskError = 16,
+        DriveNotReady = 32,
+        PathLengthExceeded = 64,
+        ExceptionCaught = 128
+    }
     /// <summary>
     /// This class is responsible for getting bitmap images of the screen area. It also saves screenshots to the file system.
     /// </summary>
@@ -336,15 +347,16 @@ namespace AutoScreenCapture
             return encoders.FirstOrDefault(t => t.MimeType == mimeType);
         }
 
-        private bool AddScreenshotAndSaveToFile(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
+        private int AddScreenshotAndSaveToFile(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
         {
+            int returnFlag = 0;
             string dirName = _fileSystem.GetDirectoryName(screenshot.Path);
 
             if (string.IsNullOrEmpty(dirName))
             {
                 _log.WriteDebugMessage("Directory name for screenshot with path \"" + screenshot.Path + "\" could not be found");
 
-                return false;
+                return returnFlag | (int)ScreenSavingErrorLevels.DirNotFound;
             }
 
             try
@@ -359,7 +371,7 @@ namespace AutoScreenCapture
                 if (screenshotCollection.Add(screenshot))
                 {
                     SaveToFile(screenshot, security, jpegQuality);
-                    return true;
+                    return returnFlag & (int)ScreenSavingErrorLevels.None;
                 }
                 else
                 {
@@ -371,7 +383,7 @@ namespace AutoScreenCapture
                     }
 
                     _log.WriteDebugMessage("Could not save screenshot with path \"" + screenshot.Path + "\" because its " + hash + " may have matched with a previous hash that has already been used for an earlier screenshot");
-                    return false;
+                    return returnFlag | (int)ScreenSavingErrorLevels.HashDuplicate;
                 }
             }
             catch
@@ -379,7 +391,7 @@ namespace AutoScreenCapture
                 // We don't want to stop the screen capture session at this point because there may be other components that
                 // can write to their given paths. If this is a misconfigured path for a particular component then just log an error.
                 _log.WriteErrorMessage($"Cannot write to \"{screenshot.Path}\" because the user may not have the appropriate permissions to access the path");
-                return false;
+                return returnFlag | (int)ScreenSavingErrorLevels.UserNotEnoughPermissions;
             }
         }
 
@@ -746,8 +758,9 @@ namespace AutoScreenCapture
         /// <param name="screenshot">The screenshot to save.</param>
         /// <param name="screenshotCollection">A collection of screenshot objects.</param>
         /// <returns>A boolean to determine if we successfully saved the screenshot.</returns>
-        public bool SaveScreenshot(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
+        public int SaveScreenshot(Security security, int jpegQuality, Screenshot screenshot, ScreenshotCollection screenshotCollection)
         {
+            int returnFlag = 0;
             try
             {
                 int filepathLengthLimit = Convert.ToInt32(_config.Settings.Application.GetByKey("FilepathLengthLimit", _config.Settings.DefaultSettings.FilepathLengthLimit).Value);
@@ -789,7 +802,7 @@ namespace AutoScreenCapture
 
                                     ApplicationError = true;
 
-                                    return false;
+                                    return returnFlag | (int)ScreenSavingErrorLevels.StopOnLowDiskError;
                                 }
 
                                 ApplicationWarning = true;
@@ -799,6 +812,7 @@ namespace AutoScreenCapture
                         {
                             // Drive isn't ready so log an error message.
                             _log.WriteErrorMessage($"Unable to save screenshot for \"{screenshot.Path}\" because the drive is not found or not ready");
+                            return returnFlag | (int)ScreenSavingErrorLevels.DriveNotReady;
                         }
                     }
                     else
@@ -808,7 +822,7 @@ namespace AutoScreenCapture
                     }
                 }
 
-                return true;
+                return returnFlag & (int)ScreenSavingErrorLevels.None;
             }
             catch (PathTooLongException ex)
             {
@@ -816,13 +830,13 @@ namespace AutoScreenCapture
                 _log.WriteExceptionMessage("ScreenCapture::SaveScreenshot", ex);
 
                 // This shouldn't be an error that should stop a screen capture session.
-                return true;
+                return returnFlag | (int)ScreenSavingErrorLevels.PathLengthExceeded;
             }
             catch (Exception ex)
             {
                 _log.WriteExceptionMessage("ScreenCapture::SaveScreenshot", ex);
 
-                return false;
+                return returnFlag | (int)ScreenSavingErrorLevels.ExceptionCaught;
             }
         }
 

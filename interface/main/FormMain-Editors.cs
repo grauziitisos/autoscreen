@@ -200,7 +200,8 @@ namespace AutoScreenCapture
         /// Executes a chosen image editor from a Trigger to open the last set of screenshots taken with the image editor.
         /// </summary>
         /// <param name="editor">The image editor to execute.</param>
-        /// <param name="triggerActionType">The trigger's action type.</param>
+        /// <param name="triggerActionType">The trigger's action type.</param>1
+        /// <param name="triggerConditionType">The trigger's condition type</param>
         private void RunEditor(Editor editor, TriggerActionType triggerActionType, TriggerConditionType triggerConditionType= TriggerConditionType.AfterScreenshotTaken)
         {
             if (editor != null && triggerActionType == TriggerActionType.RunEditor)

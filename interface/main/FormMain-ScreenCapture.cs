@@ -320,6 +320,7 @@ namespace AutoScreenCapture
 
         private bool SaveScreenshot(Bitmap bitmap, Screen screen)
         {
+            //lol for now this return value is ignored anyways - if success, the brackets close resulting in next. if fail- continue resulting in next..
             if (bitmap == null)
             {
                 return false;
@@ -336,19 +337,25 @@ namespace AutoScreenCapture
                 Encrypted = screen.Encrypt
             };
 
-            bool screenSaved = _screenCapture.SaveScreenshot(_security, screen.JpegQuality, screenshot, _screenshotCollection);
-            if (screenSaved || _screenshotCollection.OptimizeScreenCapture)
-            {
-                ScreenshotTakenWithSuccess(screenSaved);
+            int errorLevel = _screenCapture.SaveScreenshot(_security, screen.JpegQuality, screenshot, _screenshotCollection);
+            bool screenSaved = errorLevel == (int)ScreenSavingErrorLevels.None ? true :
+                    //here list the errorLevels that should not stop the capturing session. Writing !=0 is shorther than == flag
+                    (errorLevel & (int)ScreenSavingErrorLevels.HashDuplicate) != 0 ||
+                    (errorLevel & (int)ScreenSavingErrorLevels.PathLengthExceeded) != 0 ||
+                    (errorLevel & (int)ScreenSavingErrorLevels.DriveNotReady) != 0;
 
-                return true;
-            }
-            else
-            {
-                ScreenshotTakenWithFailure();
+                if (screenSaved)
+                {
+                    ScreenshotTakenWithSuccess(errorLevel);
 
-                return false;
-            }
+                    return true;
+                }
+                else
+                {
+                    ScreenshotTakenWithFailure();
+
+                    return false;
+                }
         }
 
         private bool SaveScreenshot(Bitmap bitmap, Region region)
@@ -369,10 +376,16 @@ namespace AutoScreenCapture
                 Encrypted = region.Encrypt
             };
 
-            bool screenSaved = _screenCapture.SaveScreenshot(_security, region.JpegQuality, screenshot, _screenshotCollection);
-            if (screenSaved || _screenshotCollection.OptimizeScreenCapture)
+            int errorLevel = _screenCapture.SaveScreenshot(_security, region.JpegQuality, screenshot, _screenshotCollection);
+            bool screenSaved = errorLevel == (int)ScreenSavingErrorLevels.None ? true :
+                //here list the errorLevels that should not stop the capturing session. Writing !=0 is shorther than == flag
+                (errorLevel & (int)ScreenSavingErrorLevels.HashDuplicate) != 0 ||
+                (errorLevel & (int)ScreenSavingErrorLevels.PathLengthExceeded) != 0 ||
+                (errorLevel & (int)ScreenSavingErrorLevels.DriveNotReady) != 0
+                ;
+            if (screenSaved)
             {
-                ScreenshotTakenWithSuccess(screenSaved);
+                ScreenshotTakenWithSuccess(errorLevel);
 
                 return true;
             }
@@ -384,11 +397,11 @@ namespace AutoScreenCapture
             }
         }
 
-        private void ScreenshotTakenWithSuccess(bool RunTriggers = true)
+        private void ScreenshotTakenWithSuccess(int RunTriggers = 0)
         {
-            _log.WriteDebugMessage("Running triggers of condition type ScreenshotTaken");
+            _log.WriteDebugMessage(RunTriggers == 0 ? "Running triggers of condition type SingleScreenshotTaken and ScreenshotTaken" : "Skipping the ScreenshotTaken an SingleScreenshotTaken triggers");
 
-            if (RunTriggers)
+            if (RunTriggers == 0)
             {
                 RunTriggersOfConditionType(TriggerConditionType.AfterSingleScreenshotTaken);
                 RunTriggersOfConditionType(TriggerConditionType.AfterScreenshotTaken);
@@ -691,7 +704,7 @@ namespace AutoScreenCapture
                     {
                         return !Regex.IsMatch(_screenCapture.ActiveWindowTitle, _formSetup.textBoxActiveWindowTitle.Text);
                     }
-                    
+
                 }
 
                 return false;
